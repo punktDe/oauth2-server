@@ -1,0 +1,17 @@
+#
+# Security policy for PunktDe.OAuth2.Server
+#
+privilegeTargets:
+  'Neos\Flow\Security\Authorization\Privilege\Method\MethodPrivilege':
+    'PunktDe.OAuth2.Server:Public':
+      matcher: 'method(PunktDe\OAuth2\Server\Controller\OAuthServerController->(initialize|accessToken|authorize)Action())'
+
+#
+# ROLES
+#
+roles:
+  'Neos.Flow:Everybody':
+    privileges:
+      -
+        privilegeTarget: 'PunktDe.OAuth2.Server:Public'
+        permission: GRANT

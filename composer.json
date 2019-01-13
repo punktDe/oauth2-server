@@ -1,0 +1,19 @@
+{
+  "name": "punktde/oauth2-server",
+  "license": "MIT",
+  "type": "neos-package",
+  "description": "OAuth 2.0 Server for Flow Framework",
+  "require": {
+    "neos/flow": "^5.0",
+    "league/oauth2-server": "6.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "PunktDe\\OAuth2\\Server\\": "Classes"
+    }
+  },
+  "extra": {
+    "applied-flow-migrations": [
+    ]
+  }
+}

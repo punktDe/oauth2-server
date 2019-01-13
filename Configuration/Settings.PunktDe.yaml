@@ -1,0 +1,12 @@
+PunktDe:
+  OAuth2:
+    Server:
+      grantTypes:
+        clientCredentials:
+          enabled: false
+        authCode:
+          enabled: false
+        implicit:
+          enabled: false
+        password:
+          enabled: false

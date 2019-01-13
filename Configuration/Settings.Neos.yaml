@@ -1,0 +1,7 @@
+Neos:
+  Flow:
+    mvc:
+      routes:
+        PunktDe.OAuth2.Server:
+          position: 'before Neos.Neos'
+
