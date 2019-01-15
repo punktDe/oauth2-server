@@ -127,13 +127,13 @@ final class OAuthServerCommandController extends CommandController
                 $client->getIdentifier(),
                 $client->getName(),
                 $client->getGrantType(),
-                implode(',', $client->getRedirectUri())
+                implode(PHP_EOL, $client->getRedirectUri())
             ];
         }
 
         $this->output->outputTable(
             $rows,
-            ['Identifier', 'Name', 'Grant Type', 'Redirect URIs']
+            ['Identifier', 'Name', 'Grant Type', 'Valid Redirect URIs']
         );
     }
 
