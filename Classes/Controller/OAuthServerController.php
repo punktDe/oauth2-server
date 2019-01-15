@@ -30,8 +30,8 @@ use PunktDe\OAuth2\Server\Utility\LogEnvironment;
 
 final class OAuthServerController extends ActionController
 {
-    const GRANT_TYPE_CLIENT_CREDENTIALS = 'clientCredentials';
-    const GRANT_TYPE_AUTH_CODE = 'authCode';
+    const GRANT_TYPE_CLIENT_CREDENTIALS = 'client_credentials';
+    const GRANT_TYPE_AUTH_CODE = 'authorization_code';
     const GRANT_TYPE_IMPLICIT = 'implicit';
     const GRANT_TYPE_PASSWORD = 'password';
 
@@ -97,21 +97,31 @@ final class OAuthServerController extends ActionController
      * @return void
      * @throws \Exception
      */
-    public function initializeObject(): void
+    public function initializeAction(): void
     {
-        if($this->isGrantTypeEnabled(self::GRANT_TYPE_CLIENT_CREDENTIALS)) {
+        $privateKeyPathAndFilename = KeyManagement::saveKeyToFile($this->keyManagement->getPrivateKey());
+
+        $this->authorizationServer = new AuthorizationServer(
+            $this->clientRepository,
+            $this->accessTokenRepository,
+            $this->scopeRepository,
+            $privateKeyPathAndFilename,
+            $this->keyManagement->getEncryptionKey()
+        );
+
+        if ($this->isGrantTypeEnabled(self::GRANT_TYPE_CLIENT_CREDENTIALS)) {
             $this->initializeClientCredentialsGrant();
         }
 
-        if($this->isGrantTypeEnabled(self::GRANT_TYPE_AUTH_CODE)) {
+        if ($this->isGrantTypeEnabled(self::GRANT_TYPE_AUTH_CODE)) {
             $this->initializeAuthCodeGrant();
         }
 
-        if($this->isGrantTypeEnabled(self::GRANT_TYPE_IMPLICIT)) {
+        if ($this->isGrantTypeEnabled(self::GRANT_TYPE_IMPLICIT)) {
             $this->initializeImplicitGrant();
         }
 
-        if($this->isGrantTypeEnabled(self::GRANT_TYPE_PASSWORD)) {
+        if ($this->isGrantTypeEnabled(self::GRANT_TYPE_PASSWORD)) {
             $this->initializePasswordGrant();
         }
     }
@@ -125,12 +135,15 @@ final class OAuthServerController extends ActionController
     {
         $response = new Response();
 
-        $this->logger->info('Requested authorization', LogEnvironment::fromMethodName(__METHOD__));
+        $this->logger->info('Requested authorization for client ' . $this->getRequestingClientFromCurrentRequest(), LogEnvironment::fromMethodName(__METHOD__));
         $this->debugRequest();
 
         try {
             $authRequest = $this->authorizationServer->validateAuthorizationRequest($this->request->getHttpRequest());
             $authRequest->setUser(new UserEntity());
+
+            // At this point we could redirect the user to an authorization page.
+
             $authRequest->setAuthorizationApproved(true);
             $response = $this->authorizationServer->completeAuthorizationRequest($authRequest, $response);
 
@@ -156,23 +169,18 @@ final class OAuthServerController extends ActionController
     {
         $response = new Response();
 
-        $this->logger->info('OAuth access token requested', LogEnvironment::fromMethodName(__METHOD__));
+        $this->logger->info('OAuth access token requested for client ' . $this->getRequestingClientFromCurrentRequest(), LogEnvironment::fromMethodName(__METHOD__));
         $this->debugRequest();
 
         try {
-            $authRequest = $this->authorizationServer->validateAuthorizationRequest($this->request->getHttpRequest());
-            $authRequest->setUser(new UserEntity());
-
-            // At this point we could redirect the user to an authorization page.
-
-            $authRequest->setAuthorizationApproved(true);
-            $response = $this->authorizationServer->completeAuthorizationRequest($authRequest, $response);
-
+            $response = $this->authorizationServer->respondToAccessTokenRequest(
+                $this->request->getHttpRequest(),
+                $response
+            );
         } catch (OAuthServerException $exception) {
             $this->logger->error(sprintf('OAuthServerException: %s', $exception->getMessage()), LogEnvironment::fromMethodName(__METHOD__));
             $response = $exception->generateHttpResponse($response);
         } catch (\Exception $exception) {
-            $this->logger->error(sprintf('%s', $exception->getMessage()), LogEnvironment::fromMethodName(__METHOD__));
             PsrRequestResponseService::psr7ErrorResponseFromMessage($response, $exception->getMessage());
         }
 
@@ -180,20 +188,10 @@ final class OAuthServerController extends ActionController
     }
 
     /**
-     * @throws \PunktDe\OAuth2\Server\OAuthServerException
      * @throws \Exception
      */
     private function initializeClientCredentialsGrant(): void
     {
-        $privateKeyPathAndFilename = KeyManagement::saveKeyToFile($this->keyManagement->getPrivateKey());
-        $this->authorizationServer = new AuthorizationServer(
-            $this->clientRepository,
-            $this->accessTokenRepository,
-            $this->scopeRepository,
-            $privateKeyPathAndFilename,
-            $this->keyManagement->getEncryptionKey()
-        );
-
         $this->authorizationServer->enableGrantType(
             new ClientCredentialsGrant(),
             new \DateInterval('PT1H')
@@ -218,7 +216,7 @@ final class OAuthServerController extends ActionController
             new \DateInterval('PT1H')
         );
     }
-    
+
     /**
      * @throws \Exception
      */
@@ -267,6 +265,13 @@ final class OAuthServerController extends ActionController
             $requestArguments['client_secret'] = str_repeat('*', strlen($requestArguments['client_secret']));
         }
 
-        $this->logger->debug('Request arguments', $requestArguments + LogEnvironment::fromMethodName(__METHOD__));
+        $this->logger->debug('Request arguments for ' . $this->request->getHttpRequest()->getRelativePath(), $requestArguments + LogEnvironment::fromMethodName(__METHOD__));
+    }
+
+    /**
+     * @return string
+     */
+    private function getRequestingClientFromCurrentRequest(): string {
+        return $this->request->getHttpRequest()->hasArgument('client_id') ? $this->request->getHttpRequest()->getArgument('client_id') : '';
     }
 }

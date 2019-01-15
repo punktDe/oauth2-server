@@ -2,9 +2,9 @@ PunktDe:
   OAuth2:
     Server:
       grantTypes:
-        clientCredentials:
+        client_credentials:
           enabled: false
-        authCode:
+        authorization_code:
           enabled: false
         implicit:
           enabled: false
