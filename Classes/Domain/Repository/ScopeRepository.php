@@ -18,11 +18,15 @@ final class ScopeRepository extends Repository implements ScopeRepositoryInterfa
     // phpcs:disable
 
     /**
+     * @Flow\InjectConfiguration(path="scopes")
      * @var string[]
      */
-    private $scopes = [
-        'userinfo' => null
-    ];
+    protected $scopeIdentifiers;
+
+    /**
+     * @var Scope[]
+     */
+    protected $scopes;
 
     /**
      * @param string $identifier
@@ -30,11 +34,11 @@ final class ScopeRepository extends Repository implements ScopeRepositoryInterfa
      */
     public function getScopeEntityByIdentifier($identifier)
     {
-        if (!key_exists($identifier, $this->scopes)) {
+        if (!key_exists($identifier, $this->scopeIdentifiers)) {
             return null;
         }
 
-        if ($this->scopes[$identifier] === null) {
+        if (!isset($this->scopes[$identifier])) {
             $this->scopes[$identifier] = new Scope($identifier);
         }
 
@@ -48,12 +52,7 @@ final class ScopeRepository extends Repository implements ScopeRepositoryInterfa
      * @param null $userIdentifier
      * @return ScopeEntityInterface[]
      */
-    public function finalizeScopes(
-        array $scopes,
-        $grantType,
-        ClientEntityInterface $clientEntity,
-        $userIdentifier = null
-    )
+    public function finalizeScopes(array $scopes, $grantType, ClientEntityInterface $clientEntity, $userIdentifier = null)
     {
         return $scopes;
     }
