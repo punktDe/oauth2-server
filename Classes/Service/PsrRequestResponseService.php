@@ -59,7 +59,7 @@ class PsrRequestResponseService
      */
     public static function psr7ErrorResponseFromMessage(Response $psr7Response, string $message, int $status = 500): Response
     {
-        $body = new Stream('php://temp', 'r+');
+        $body = new Stream(fopen('php://temp', 'r+'));
         $body->write($message);
         return $psr7Response->withStatus($status)->withBody($body);
     }
