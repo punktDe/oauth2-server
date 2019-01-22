@@ -8,74 +8,40 @@ namespace PunktDe\OAuth2\Server\Controller;
  *  All rights reserved.
  */
 
-use League\OAuth2\Server\Grant\PasswordGrant;
+use League\OAuth2\Server\RequestTypes\AuthorizationRequest;
 use Neos\Flow\Annotations as Flow;
-use League\OAuth2\Server\Grant\ImplicitGrant;
-use League\OAuth2\Server\Grant\AuthCodeGrant;
+use Neos\Flow\Security\Account;
+use Neos\Flow\Security\Context;
+use Psr\Http\Message\ResponseInterface;
+use PunktDe\OAuth2\Server\AuthorizationServerFactory;
 use PunktDe\OAuth2\Server\Domain\Model\UserEntity;
-use PunktDe\OAuth2\Server\Domain\Repository\AccessTokenRepository;
-use PunktDe\OAuth2\Server\Domain\Repository\AuthCodeRepository;
-use PunktDe\OAuth2\Server\Domain\Repository\ClientRepository;
-use PunktDe\OAuth2\Server\Domain\Repository\RefreshTokenRepository;
-use PunktDe\OAuth2\Server\Domain\Repository\ScopeRepository;
 use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Exception\OAuthServerException;
-use League\OAuth2\Server\Grant\ClientCredentialsGrant;
 use Neos\Flow\Mvc\Controller\ActionController;
-use PunktDe\OAuth2\Server\Domain\Repository\UserRepository;
-use PunktDe\OAuth2\Server\Service\KeyManagement;
 use PunktDe\OAuth2\Server\Service\PsrRequestResponseService;
+use PunktDe\OAuth2\Server\Session\AuthorizationSession;
 use PunktDe\OAuth2\Server\Utility\LogEnvironment;
 
 final class OAuthServerController extends ActionController
 {
-    const GRANT_TYPE_CLIENT_CREDENTIALS = 'client_credentials';
-    const GRANT_TYPE_AUTH_CODE = 'authorization_code';
-    const GRANT_TYPE_IMPLICIT = 'implicit';
-    const GRANT_TYPE_PASSWORD = 'password';
+    /**
+     * @Flow\Inject
+     * @var Context
+     */
+    protected $securityContext;
 
     /**
-     * @Flow\Inject(lazy=false)
-     * @var ClientRepository
+     * @Flow\Inject
+     * @var AuthorizationSession
      */
-    protected $clientRepository;
+    protected $authorizationSession;
 
     /**
-     * @Flow\Inject(lazy=false)
-     * @var AccessTokenRepository
+     * @Flow\Inject
+     * @var AuthorizationServerFactory
      */
-    protected $accessTokenRepository;
-
-    /**
-     * @Flow\Inject(lazy=false)
-     * @var ScopeRepository
-     */
-    protected $scopeRepository;
-
-    /**
-     * @Flow\Inject(lazy=false)
-     * @var AuthCodeRepository
-     */
-    protected $authCodeRepository;
-
-    /**
-     * @Flow\Inject(lazy=false)
-     * @var RefreshTokenRepository
-     */
-    protected $refreshTokenRepository;
-
-    /**
-     * @Flow\Inject(lazy=false)
-     * @var UserRepository
-     */
-    protected $userRepository;
-
-    /**
-     * @Flow\Inject(lazy=false)
-     * @var KeyManagement
-     */
-    protected $keyManagement;
+    protected $authorizationServerFactory;
 
     /**
      * @var AuthorizationServer
@@ -88,10 +54,10 @@ final class OAuthServerController extends ActionController
     protected $supportedMediaTypes = ['application/json'];
 
     /**
-     * @Flow\InjectConfiguration(path="grantTypes")
-     * @var mixed[]
+     * @Flow\InjectConfiguration(path="authenticationPageUri")
+     * @var string
      */
-    protected $grantTypeConfiguration;
+    protected $authenticationPageUri;
 
     /**
      * @return void
@@ -99,31 +65,7 @@ final class OAuthServerController extends ActionController
      */
     public function initializeAction(): void
     {
-        $privateKeyPathAndFilename = KeyManagement::saveKeyToFile($this->keyManagement->getPrivateKey());
-
-        $this->authorizationServer = new AuthorizationServer(
-            $this->clientRepository,
-            $this->accessTokenRepository,
-            $this->scopeRepository,
-            $privateKeyPathAndFilename,
-            $this->keyManagement->getEncryptionKey()
-        );
-
-        if ($this->isGrantTypeEnabled(self::GRANT_TYPE_CLIENT_CREDENTIALS)) {
-            $this->initializeClientCredentialsGrant();
-        }
-
-        if ($this->isGrantTypeEnabled(self::GRANT_TYPE_AUTH_CODE)) {
-            $this->initializeAuthCodeGrant();
-        }
-
-        if ($this->isGrantTypeEnabled(self::GRANT_TYPE_IMPLICIT)) {
-            $this->initializeImplicitGrant();
-        }
-
-        if ($this->isGrantTypeEnabled(self::GRANT_TYPE_PASSWORD)) {
-            $this->initializePasswordGrant();
-        }
+        $this->authorizationServer = $this->authorizationServerFactory->getInstance();
     }
 
     /**
@@ -139,13 +81,14 @@ final class OAuthServerController extends ActionController
         $this->debugRequest();
 
         try {
-            $authRequest = $this->authorizationServer->validateAuthorizationRequest($this->request->getHttpRequest());
-            $authRequest->setUser(new UserEntity());
+            $authorizationRequest = $this->authorizationServer->validateAuthorizationRequest($this->request->getHttpRequest());
 
-            // At this point we could redirect the user to an authorization page.
-
-            $authRequest->setAuthorizationApproved(true);
-            $response = $this->authorizationServer->completeAuthorizationRequest($authRequest, $response);
+            if ($this->securityContext->isInitialized() && $this->securityContext->getAccount() instanceof Account) {
+                $response = $this->approveAuthenticationRequest($authorizationRequest, $response);
+            } else {
+                $this->authorizationSession->setAuthorizationRequest($authorizationRequest);
+                $this->redirectToUri($this->authenticationPageUri);
+            }
 
         } catch (OAuthServerException $exception) {
             // All instances of OAuthServerException can be formatted into a HTTP response
@@ -188,74 +131,6 @@ final class OAuthServerController extends ActionController
     }
 
     /**
-     * @throws \Exception
-     */
-    private function initializeClientCredentialsGrant(): void
-    {
-        $this->authorizationServer->enableGrantType(
-            new ClientCredentialsGrant(),
-            new \DateInterval('PT1H')
-        );
-    }
-
-    /**
-     * @throws \Exception
-     */
-    private function initializeAuthCodeGrant(): void
-    {
-        $authCodeGrant = new AuthCodeGrant(
-            $this->authCodeRepository,
-            $this->refreshTokenRepository,
-            new \DateInterval('PT10M')
-        );
-
-        $authCodeGrant->setRefreshTokenTTL(new \DateInterval('P1M')); // refresh tokens will expire after 1 month
-
-        $this->authorizationServer->enableGrantType(
-            $authCodeGrant,
-            new \DateInterval('PT1H')
-        );
-    }
-
-    /**
-     * @throws \Exception
-     */
-    private function initializeImplicitGrant(): void
-    {
-        $this->authorizationServer->enableGrantType(
-            new ImplicitGrant(new \DateInterval('PT1H')),
-            new \DateInterval('PT1H') // access tokens will expire after 1 hour
-        );
-    }
-
-    /**
-     * @throws \Exception
-     */
-    private function initializePasswordGrant(): void
-    {
-        $grant = new PasswordGrant(
-            $this->userRepository,
-            $this->refreshTokenRepository
-        );
-
-        $grant->setRefreshTokenTTL(new \DateInterval('P1M')); // refresh tokens will expire after 1 month
-
-        $this->authorizationServer->enableGrantType(
-            $grant,
-            new \DateInterval('PT1H') // access tokens will expire after 1 hour
-        );
-    }
-
-    /**
-     * @param string $grantType
-     * @return bool
-     */
-    private function isGrantTypeEnabled(string $grantType): bool
-    {
-        return isset($this->grantTypeConfiguration[$grantType]['enabled']) ? $this->grantTypeConfiguration[$grantType]['enabled'] : false;
-    }
-
-    /**
      * Debug the current request to the log
      */
     private function debugRequest(): void
@@ -271,7 +146,21 @@ final class OAuthServerController extends ActionController
     /**
      * @return string
      */
-    private function getRequestingClientFromCurrentRequest(): string {
+    private function getRequestingClientFromCurrentRequest(): string
+    {
         return $this->request->getHttpRequest()->hasArgument('client_id') ? $this->request->getHttpRequest()->getArgument('client_id') : '';
+    }
+
+    /**
+     * @param AuthorizationRequest $authRequest
+     * @param Response $response
+     * @return Response
+     */
+    private function approveAuthenticationRequest(AuthorizationRequest $authRequest, Response $response): ResponseInterface
+    {
+        $authRequest->setUser(new UserEntity());
+        $authRequest->setAuthorizationApproved(true);
+        $response = $this->authorizationServer->completeAuthorizationRequest($authRequest, $response);
+        return $response;
     }
 }

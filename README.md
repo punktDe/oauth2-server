@@ -57,9 +57,3 @@ The urls to use are:
 * Authorization URL `<YourDomain>/oauth/authorize`
 
 The Authorization code grant is currently implemented with an implicit authorization of the requesting application.
-
-# TODOs
-
-* Implement Implicit Grant
-* Implement Password grant
-
