@@ -19,7 +19,7 @@ class AccessTokenOrBearerTokenValidator extends BearerTokenValidator
 {
     public function validateAuthorization(ServerRequestInterface $request)
     {
-        if ($request->hasHeader('authorization') === true) {
+        if ($request->hasHeader('authorization') === true && substr(trim(current($request->getHeader('authorization'))), 0, 6) === 'Bearer') {
             return parent::validateAuthorization($request);
         }
 
