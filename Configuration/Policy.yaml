@@ -4,7 +4,7 @@
 privilegeTargets:
   'Neos\Flow\Security\Authorization\Privilege\Method\MethodPrivilege':
     'PunktDe.OAuth2.Server:Public':
-      matcher: 'method(PunktDe\OAuth2\Server\Controller\OAuthServerController->(initialize|accessToken|authorize)Action())'
+      matcher: 'method(PunktDe\OAuth2\Server\Controller\OAuthServerController->(initialize|accessToken|authorization|approveAuthorization)Action())'
 
 #
 # ROLES

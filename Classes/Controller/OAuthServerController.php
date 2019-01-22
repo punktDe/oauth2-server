@@ -8,8 +8,8 @@ namespace PunktDe\OAuth2\Server\Controller;
  *  All rights reserved.
  */
 
-use League\OAuth2\Server\RequestTypes\AuthorizationRequest;
 use Neos\Flow\Annotations as Flow;
+use League\OAuth2\Server\RequestTypes\AuthorizationRequest;
 use Neos\Flow\Security\Account;
 use Neos\Flow\Security\Context;
 use Psr\Http\Message\ResponseInterface;
@@ -73,32 +73,47 @@ final class OAuthServerController extends ActionController
      *
      * @return string
      */
-    public function authorizeAction(): string
+    public function authorizationAction(): string
     {
-        $response = new Response();
-
         $this->logger->info('Requested authorization for client ' . $this->getRequestingClientFromCurrentRequest(), LogEnvironment::fromMethodName(__METHOD__));
         $this->debugRequest();
 
-        try {
+        $response = $this->withErrorHandling(function () {
             $authorizationRequest = $this->authorizationServer->validateAuthorizationRequest($this->request->getHttpRequest());
 
             if ($this->securityContext->isInitialized() && $this->securityContext->getAccount() instanceof Account) {
-                $response = $this->approveAuthenticationRequest($authorizationRequest, $response);
+                return $this->approveAuthenticationRequest($authorizationRequest, new Response());
             } else {
                 $this->authorizationSession->setAuthorizationRequest($authorizationRequest);
                 $this->redirectToUri($this->authenticationPageUri);
+                return new Response();
+            }
+        });
+
+        return PsrRequestResponseService::transferPsr7ResponseToFlowResponse($response, $this->response);
+    }
+
+    /**
+     * uriPattern: 'oauth/approveauthorization'
+     *
+     * @return string
+     */
+    public function approveAuthorizationAction(): string
+    {
+        $this->logger->info('Approve client form session stored authorization request', LogEnvironment::fromMethodName(__METHOD__));
+
+        $response = $this->withErrorHandling(function () {
+            $authorizationRequest = $this->authorizationSession->getAndRemoveAuthorizationRequest();
+            if(!$authorizationRequest instanceof AuthorizationRequest) {
+                throw new OAuthServerException('Requested to authorize a session stored request, but session request was empty', 1548142529, 'session_request_missing');
             }
 
-        } catch (OAuthServerException $exception) {
-            // All instances of OAuthServerException can be formatted into a HTTP response
-            $this->logger->error(sprintf('OAuthServerException: %s', $exception->getMessage()), LogEnvironment::fromMethodName(__METHOD__));
-            $response = $exception->generateHttpResponse($response);
-
-        } catch (\Exception $exception) {
-            $this->logger->error(sprintf('Unknown exception: %s', $exception->getMessage()), LogEnvironment::fromMethodName(__METHOD__));
-            PsrRequestResponseService::psr7ErrorResponseFromMessage($response, $exception->getMessage());
-        }
+            if ($this->securityContext->isInitialized() && $this->securityContext->getAccount() instanceof Account) {
+                return $this->approveAuthenticationRequest($authorizationRequest, new Response());
+            } else {
+                throw new OAuthServerException('Requested to authorize a session stored request, but user was not authenticated', 1548142529, 'user_not_authenticated');
+            }
+        });
 
         return PsrRequestResponseService::transferPsr7ResponseToFlowResponse($response, $this->response);
     }
@@ -110,24 +125,32 @@ final class OAuthServerController extends ActionController
      */
     public function accessTokenAction(): string
     {
-        $response = new Response();
-
         $this->logger->info('OAuth access token requested for client ' . $this->getRequestingClientFromCurrentRequest(), LogEnvironment::fromMethodName(__METHOD__));
         $this->debugRequest();
 
-        try {
-            $response = $this->authorizationServer->respondToAccessTokenRequest(
-                $this->request->getHttpRequest(),
-                $response
-            );
-        } catch (OAuthServerException $exception) {
-            $this->logger->error(sprintf('OAuthServerException: %s', $exception->getMessage()), LogEnvironment::fromMethodName(__METHOD__));
-            $response = $exception->generateHttpResponse($response);
-        } catch (\Exception $exception) {
-            PsrRequestResponseService::psr7ErrorResponseFromMessage($response, $exception->getMessage());
-        }
+        $response = $this->withErrorHandling(function () {
+            return $this->authorizationServer->respondToAccessTokenRequest($this->request->getHttpRequest(), new Response());
+        });
 
         return PsrRequestResponseService::transferPsr7ResponseToFlowResponse($response, $this->response);
+    }
+
+    /**
+     * @param callable $callback
+     * @return Response
+     */
+    private function withErrorHandling(callable $callback): Response
+    {
+        try {
+            return $callback();
+        } catch (OAuthServerException $exception) {
+            // All instances of OAuthServerException can be formatted into a HTTP response
+            $this->logger->error(sprintf('OAuthServerException: %s', $exception->getMessage()), LogEnvironment::fromMethodName(__METHOD__));
+            return $exception->generateHttpResponse(new Response());
+        } catch (\Exception $exception) {
+            $this->logger->error(sprintf('Unknown exception: %s', $exception->getMessage()), LogEnvironment::fromMethodName(__METHOD__));
+            return PsrRequestResponseService::psr7ErrorResponseFromMessage(new Response(), $exception->getMessage());
+        }
     }
 
     /**

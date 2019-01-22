@@ -4,9 +4,20 @@
   defaults:
     '@package':    'PunktDe.OAuth2.Server'
     '@controller': 'OAuthServer'
-    '@action':     'authorize'
+    '@action':     'authorization'
     '@format':     'json'
   appendExceedingArguments: true
+
+-
+  name: 'OAuth 2.0 Server - authorization'
+  uriPattern: 'oauth/approveauthorization'
+  defaults:
+    '@package':    'PunktDe.OAuth2.Server'
+    '@controller': 'OAuthServer'
+    '@action':     'approveAuthorization'
+    '@format':     'json'
+  appendExceedingArguments: true
+
 -
   name: 'OAuth 2.0 Server - access token'
   uriPattern: 'oauth/token'

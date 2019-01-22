@@ -24,9 +24,11 @@ class AuthorizationSession
     /**
      * @return AuthorizationRequest
      */
-    public function getAuthorizationRequest(): AuthorizationRequest
+    public function getAndRemoveAuthorizationRequest(): AuthorizationRequest
     {
-        return $this->authorizationRequest;
+        $authorizationRequest = clone $this->authorizationRequest;
+        $this->authorizationRequest = null;
+        return $authorizationRequest;
     }
 
     /**

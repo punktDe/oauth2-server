@@ -12,4 +12,4 @@ PunktDe:
           enabled: false
 
       scopes: []
-
+      authenticationPageUri: '?forwardUrl=/oauth/approveauthorization'

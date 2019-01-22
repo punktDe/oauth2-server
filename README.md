@@ -57,3 +57,8 @@ The urls to use are:
 * Authorization URL `<YourDomain>/oauth/authorize`
 
 The Authorization code grant is currently implemented with an implicit authorization of the requesting application.
+
+### Authenticating users during authorization process
+
+If `/oauth/authorize` is called without an authenticated Flow account, the user is automatically redirected to a configurable URL. 
+After authentication, the user should be forwarded to `/oauth/approveauthorization` to approve the previously started authorization session.
