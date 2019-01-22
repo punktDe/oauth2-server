@@ -81,12 +81,12 @@ final class OAuthServerController extends ActionController
         $response = $this->withErrorHandling(function () {
             $authorizationRequest = $this->authorizationServer->validateAuthorizationRequest($this->request->getHttpRequest());
 
-            if ($this->securityContext->isInitialized() && $this->securityContext->getAccount() instanceof Account) {
-                return $this->approveAuthenticationRequest($authorizationRequest, new Response());
+            $response = $this->approveAuthorizationRequest($authorizationRequest, new Response());
+            if($authorizationRequest->isAuthorizationApproved()) {
+                return $response;
             } else {
                 $this->authorizationSession->setAuthorizationRequest($authorizationRequest);
                 $this->redirectToUri($this->authenticationPageUri);
-                return new Response();
             }
         });
 
@@ -94,6 +94,8 @@ final class OAuthServerController extends ActionController
     }
 
     /**
+     * Is called after authorizationAction was called without valid user session.
+     *
      * uriPattern: 'oauth/approveauthorization'
      *
      * @return string
@@ -108,10 +110,11 @@ final class OAuthServerController extends ActionController
                 throw new OAuthServerException('Requested to authorize a session stored request, but session request was empty', 1548142529, 'session_request_missing');
             }
 
-            if ($this->securityContext->isInitialized() && $this->securityContext->getAccount() instanceof Account) {
-                return $this->approveAuthenticationRequest($authorizationRequest, new Response());
+            $response = $this->approveAuthorizationRequest($authorizationRequest, new Response());
+            if($authorizationRequest->isAuthorizationApproved()) {
+                return $response;
             } else {
-                throw new OAuthServerException('Requested to authorize a session stored request, but user was not authenticated', 1548142529, 'user_not_authenticated');
+                throw new OAuthServerException('Requesteded to authorize a session stored request, but user was not authenticated', 1548142529, 'user_not_authenticated');
             }
         });
 
@@ -179,11 +182,14 @@ final class OAuthServerController extends ActionController
      * @param Response $response
      * @return Response
      */
-    private function approveAuthenticationRequest(AuthorizationRequest $authRequest, Response $response): ResponseInterface
+    private function approveAuthorizationRequest(AuthorizationRequest $authRequest, Response $response): ResponseInterface
     {
-        $authRequest->setUser(new UserEntity());
-        $authRequest->setAuthorizationApproved(true);
-        $response = $this->authorizationServer->completeAuthorizationRequest($authRequest, $response);
+        if ($this->securityContext->isInitialized() && $this->securityContext->getAccount() instanceof Account) {
+            $authRequest->setUser(new UserEntity());
+            $authRequest->setAuthorizationApproved(true);
+            $response = $this->authorizationServer->completeAuthorizationRequest($authRequest, $response);
+        }
+
         return $response;
     }
 }
