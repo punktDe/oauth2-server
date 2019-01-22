@@ -22,12 +22,12 @@ class PsrRequestResponseService
      */
     public static function transferFlowRequestToPsr7Request(Request $flowRequest): ServerRequestInterface
     {
-        return new ServerRequest(
+        return (new ServerRequest(
             $flowRequest->getMethod(),
             $flowRequest->getUri(),
             $flowRequest->getHeaders()->getAll(),
             $flowRequest->getVersion()
-        );
+        ))->withAttribute('access_token', $flowRequest->getArgument('access_token'));
     }
 
     /**
