@@ -49,12 +49,12 @@ class AuthorizationApprovalService
         }
 
         $account = $this->securityContext->getAccount();
-        $approvalStrategies = $this->reflectionService->getAllImplementationClassNamesForInterface(ApprovalStrategyInterface::class);
+        $approvalStrategyClassNames = $this->reflectionService->getAllImplementationClassNamesForInterface(ApprovalStrategyInterface::class);
 
-        /** @var ApprovalStrategyInterface $approvalStrategy */
-        foreach ($approvalStrategies as $approvalStrategy) {
-            if($approvalStrategy->isApproved($authorizationRequest, $account) !== true) {
-                $this->logger->info(sprintf('Approval strategy %s did not approve the given account and authorization request', get_class($approvalStrategy)), LogEnvironment::fromMethodName(__METHOD__));
+        /** @var ApprovalStrategyInterface $approvalStrategyClassName */
+        foreach ($approvalStrategyClassNames as $approvalStrategyClassName) {
+            if((new $approvalStrategyClassName)->isApproved($authorizationRequest, $account) !== true) {
+                $this->logger->info(sprintf('Approval strategy %s did not approve the given account and authorization request', get_class($approvalStrategyClassName)), LogEnvironment::fromMethodName(__METHOD__));
                 return;
             }
         }
