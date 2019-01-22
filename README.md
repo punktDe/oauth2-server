@@ -62,3 +62,7 @@ The Authorization code grant is currently implemented with an implicit authoriza
 
 If `/oauth/authorize` is called without an authenticated Flow account, the user is automatically redirected to a configurable URL. 
 After authentication, the user should be forwarded to `/oauth/approveauthorization` to approve the previously started authorization session.
+
+### Custom authorization request approval
+
+Authentication request approval can be extended to fit your projects needs. You can put your custom logic into a class implementing the `ApprovalStrategyInterface`.

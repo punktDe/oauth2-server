@@ -8,26 +8,29 @@ namespace PunktDe\OAuth2\Server\Domain\Model;
  *  All rights reserved.
  */
 
+use Neos\Flow\Annotations as Flow;
 use League\OAuth2\Server\Entities\UserEntityInterface;
 use Neos\Flow\Persistence\Doctrine\PersistenceManager;
 use Neos\Flow\Security\Account;
-use Neos\Flow\Security\Context;
-use Neos\Flow\Annotations as Flow;
 
 final class UserEntity implements UserEntityInterface
 {
-
     /**
-     * @Flow\Inject
-     * @var Context
+     * @var Account
      */
-    protected $securityContext;
+    protected $account;
 
     /**
      * @Flow\Inject
      * @var PersistenceManager
      */
     protected $persistenceManager;
+
+
+    public function __construct(Account $account)
+    {
+        $this->account = $account;
+    }
 
     /**
      * Return the user's identifier.
@@ -36,10 +39,6 @@ final class UserEntity implements UserEntityInterface
      */
     public function getIdentifier()
     {
-        if ($this->securityContext->isInitialized() && $this->securityContext->getAccount() instanceof Account) {
-            return $this->persistenceManager->getIdentifierByObject($this->securityContext->getAccount());
-        }
-
-        return null;
+        return $this->persistenceManager->getIdentifierByObject($this->account);
     }
 }

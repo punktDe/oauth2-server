@@ -10,11 +10,9 @@ namespace PunktDe\OAuth2\Server\Controller;
 
 use Neos\Flow\Annotations as Flow;
 use League\OAuth2\Server\RequestTypes\AuthorizationRequest;
-use Neos\Flow\Security\Account;
-use Neos\Flow\Security\Context;
 use Psr\Http\Message\ResponseInterface;
+use PunktDe\OAuth2\Server\Authorization\AuthorizationApprovalService;
 use PunktDe\OAuth2\Server\AuthorizationServerFactory;
-use PunktDe\OAuth2\Server\Domain\Model\UserEntity;
 use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Server\AuthorizationServer;
 use League\OAuth2\Server\Exception\OAuthServerException;
@@ -27,15 +25,15 @@ final class OAuthServerController extends ActionController
 {
     /**
      * @Flow\Inject
-     * @var Context
-     */
-    protected $securityContext;
-
-    /**
-     * @Flow\Inject
      * @var AuthorizationSession
      */
     protected $authorizationSession;
+
+    /**
+     * @Flow\Inject
+     * @var AuthorizationApprovalService
+     */
+    protected $authorizationApprovalService;
 
     /**
      * @Flow\Inject
@@ -47,11 +45,6 @@ final class OAuthServerController extends ActionController
      * @var AuthorizationServer
      */
     protected $authorizationServer;
-
-    /**
-     * @var string[]
-     */
-    protected $supportedMediaTypes = ['application/json'];
 
     /**
      * @Flow\InjectConfiguration(path="authenticationPageUri")
@@ -178,16 +171,15 @@ final class OAuthServerController extends ActionController
     }
 
     /**
-     * @param AuthorizationRequest $authRequest
+     * @param AuthorizationRequest $authorizationRequest
      * @param Response $response
      * @return Response
      */
-    private function approveAuthorizationRequest(AuthorizationRequest $authRequest, Response $response): ResponseInterface
+    private function approveAuthorizationRequest(AuthorizationRequest $authorizationRequest, Response $response): ResponseInterface
     {
-        if ($this->securityContext->isInitialized() && $this->securityContext->getAccount() instanceof Account) {
-            $authRequest->setUser(new UserEntity());
-            $authRequest->setAuthorizationApproved(true);
-            $response = $this->authorizationServer->completeAuthorizationRequest($authRequest, $response);
+        $this->authorizationApprovalService->approveAuthorizationRequest($authorizationRequest);
+        if($authorizationRequest->isAuthorizationApproved()) {
+            $response = $this->authorizationServer->completeAuthorizationRequest($authorizationRequest, $response);
         }
 
         return $response;

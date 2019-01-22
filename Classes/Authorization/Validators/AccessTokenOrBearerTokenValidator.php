@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace PunktDe\OAuth2\Server\AuthorizationValidators;
+namespace PunktDe\OAuth2\Server\Authorization\Validators;
 
 /*
  *  (c) 2019 punkt.de GmbH - Karlsruhe, Germany - http://punkt.de
