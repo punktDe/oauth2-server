@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="PSR-2-ElEquipo" xsi:noNamespaceSchemaLocation="phpcs.xsd">
+    <description>PSR2 Coding standard ElEquipo flavored.</description>
+
+    <file>Source</file>
+    <extensions>php</extensions>
+
+
+    <arg name="basepath" value="."/>
+    <arg name="colors"/>
+    <arg name="parallel" value="75"/>
+    <arg name="extensions" value="php"/>
+    <arg value="p"/>
+
+    <exclude-pattern>Source/PunktDe.Vvw.Tests/Tests/Behaviour/_support</exclude-pattern>
+    <exclude-pattern>*Tests/Unit/*</exclude-pattern>
+    <exclude-pattern>*Tests/Functional/*</exclude-pattern>
+    <exclude-pattern>Source/PunktDe.Vvw.MyVvw</exclude-pattern>
+
+    <!-- Don't hide tokenizer exceptions -->
+    <rule ref="Internal.Tokenizer.Exception">
+        <type>error</type>
+    </rule>
+
+    <rule ref="PSR2">
+        <!-- Sometimes new lines really help to grasp a code block  -->
+        <exclude name="Squiz.WhiteSpace.ControlStructureSpacing.SpacingAfterOpen"/>
+        <exclude name="Squiz.WhiteSpace.ControlStructureSpacing.SpacingBeforeClose"/>
+        <exclude name="Generic.Files.LineLength"/>
+    </rule>
+
+    <!-- Additional rules -->
+    <rule ref="Generic.Arrays.DisallowLongArraySyntax"/>
+    <rule ref="Generic.PHP.DeprecatedFunctions"/>
+    <rule ref="Generic.Strings.UnnecessaryStringConcat"/>
+    <rule ref="Generic.Metrics.NestingLevel">
+        <properties>
+            <property name="absoluteNestingLevel" value="8" />
+        </properties>
+    </rule>
+    <rule ref="Generic.NamingConventions.CamelCapsFunctionName">
+        <properties>
+            <property name="strict" value="false" />
+        </properties>
+    </rule>
+    <rule ref="Squiz.PHP.CommentedOutCode">
+        <properties>
+            <property name="maxPercentage" value="50" />
+        </properties>
+    </rule>
+
+    <!-- Coding Standard Package -->
+    <config name="installed_paths" value="../../slevomat/coding-standard"/>
+    <rule ref="SlevomatCodingStandard.ControlStructures.DisallowEqualOperators"></rule>
+    <rule ref="SlevomatCodingStandard.Functions.UnusedParameter"></rule>
+    <rule ref="SlevomatCodingStandard.Namespaces.UnusedUses">
+        <properties>
+            <property name="searchAnnotations" value="true" />
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.Variables.UnusedVariable"></rule>
+    <rule ref="SlevomatCodingStandard.Variables.UselessVariable"></rule>
+    <rule ref="SlevomatCodingStandard.TypeHints.TypeHintDeclaration"></rule>
+
+    <rule ref="SlevomatCodingStandard.TypeHints.TypeHintDeclaration.UselessDocComment">
+        <severity>0</severity>
+    </rule>
+
+    <!-- Ban some functions -->
+    <rule ref="Generic.PHP.ForbiddenFunctions">
+        <properties>
+            <property name="forbiddenFunctions" type="array">
+                <element key="sizeof" value="count"/>
+                <element key="delete" value="unset"/>
+                <element key="print" value="echo"/>
+                <element key="is_null" value="null"/>
+                <element key="create_function" value="null"/>
+            </property>
+        </properties>
+    </rule>
+</ruleset>

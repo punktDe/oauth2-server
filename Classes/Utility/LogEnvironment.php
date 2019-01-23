@@ -28,7 +28,7 @@ use Neos\Flow\Annotations as Flow;
 abstract class LogEnvironment
 {
     /**
-     * @var array
+     * @var mixed[]
      */
     protected static $packageKeys = null;
 
@@ -38,7 +38,7 @@ abstract class LogEnvironment
      * in an log method call.
      *
      * @param string $methodName
-     * @return array
+     * @return string[]
      */
     public static function fromMethodName(string $methodName): array
     {
@@ -84,7 +84,7 @@ abstract class LogEnvironment
     }
 
     /**
-     * @return array
+     * @return string[]
      * @Flow\CompileStatic
      */
     protected static function getPackageKeys(): array

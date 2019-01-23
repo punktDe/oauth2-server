@@ -75,7 +75,7 @@ final class OAuthServerController extends ActionController
             $authorizationRequest = $this->authorizationServer->validateAuthorizationRequest($this->request->getHttpRequest());
 
             $response = $this->approveAuthorizationRequest($authorizationRequest, new Response());
-            if($authorizationRequest->isAuthorizationApproved()) {
+            if ($authorizationRequest->isAuthorizationApproved()) {
                 return $response;
             } else {
                 $this->authorizationSession->setAuthorizationRequest($authorizationRequest);
@@ -99,12 +99,12 @@ final class OAuthServerController extends ActionController
 
         $response = $this->withErrorHandling(function () {
             $authorizationRequest = $this->authorizationSession->getAndRemoveAuthorizationRequest();
-            if(!$authorizationRequest instanceof AuthorizationRequest) {
+            if (!$authorizationRequest instanceof AuthorizationRequest) {
                 throw new OAuthServerException('Requested to authorize a session stored request, but session request was empty', 1548142529, 'session_request_missing');
             }
 
             $response = $this->approveAuthorizationRequest($authorizationRequest, new Response());
-            if($authorizationRequest->isAuthorizationApproved()) {
+            if ($authorizationRequest->isAuthorizationApproved()) {
                 return $response;
             } else {
                 throw new OAuthServerException('Requesteded to authorize a session stored request, but user was not authenticated', 1548142529, 'user_not_authenticated');
@@ -178,7 +178,7 @@ final class OAuthServerController extends ActionController
     private function approveAuthorizationRequest(AuthorizationRequest $authorizationRequest, Response $response): ResponseInterface
     {
         $this->authorizationApprovalService->approveAuthorizationRequest($authorizationRequest);
-        if($authorizationRequest->isAuthorizationApproved()) {
+        if ($authorizationRequest->isAuthorizationApproved()) {
             $response = $this->authorizationServer->completeAuthorizationRequest($authorizationRequest, $response);
         }
 

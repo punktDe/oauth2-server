@@ -198,5 +198,4 @@ class AuthorizationServerFactory
     {
         return isset($this->grantTypeConfiguration[$grantType]['enabled']) ? $this->grantTypeConfiguration[$grantType]['enabled'] : false;
     }
-
 }

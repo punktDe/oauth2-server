@@ -17,6 +17,11 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class AccessTokenOrBearerTokenValidator extends BearerTokenValidator
 {
+    /**
+     * phpcs:disable
+     * @param ServerRequestInterface $request
+     * @return BearerTokenValidator|ServerRequestInterface
+     */
     public function validateAuthorization(ServerRequestInterface $request)
     {
         if ($request->hasHeader('authorization') === true && substr(trim(current($request->getHeader('authorization'))), 0, 6) === 'Bearer') {

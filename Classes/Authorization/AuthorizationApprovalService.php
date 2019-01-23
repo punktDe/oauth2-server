@@ -53,7 +53,7 @@ class AuthorizationApprovalService
 
         /** @var ApprovalStrategyInterface $approvalStrategyClassName */
         foreach ($approvalStrategyClassNames as $approvalStrategyClassName) {
-            if((new $approvalStrategyClassName)->isApproved($authorizationRequest, $account) !== true) {
+            if ((new $approvalStrategyClassName)->isApproved($authorizationRequest, $account) !== true) {
                 $this->logger->info(sprintf('Approval strategy %s did not approve the given account and authorization request', get_class($approvalStrategyClassName)), LogEnvironment::fromMethodName(__METHOD__));
                 return;
             }

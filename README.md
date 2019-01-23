@@ -1,6 +1,6 @@
 # OAuth 2.0 Server for the Flow Framework
 
-[![Latest Stable Version](https://poser.pugx.org/punktde/oauth2-server/v/stable)](https://packagist.org/packages/punktde/oauth2-server) [![Total Downloads](https://poser.pugx.org/punktde/oauth2-server/downloads)](https://packagist.org/packages/punktde/oauth2-server)
+[![Travis Build Status](https://travis-ci.org/punktDe/oauth2-server.svg?branch=master)](https://travis-ci.org/punktDe/oauth2-server) [![Latest Stable Version](https://poser.pugx.org/punktde/oauth2-server/v/stable)](https://packagist.org/packages/punktde/oauth2-server) [![Total Downloads](https://poser.pugx.org/punktde/oauth2-server/downloads)](https://packagist.org/packages/punktde/oauth2-server)
 
 This [Flow](https://flow.neos.io) package provides an OAuth 2.0 server, based on [The PHP League OAuth Server](https://oauth2.thephpleague.com/).
 
