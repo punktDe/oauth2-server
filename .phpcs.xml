@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="PSR-2-ElEquipo" xsi:noNamespaceSchemaLocation="phpcs.xsd">
-    <description>PSR2 Coding standard ElEquipo flavored.</description>
+    <description>PSR2 Coding standard Punkt.de flavored.</description>
 
     <file>Source</file>
     <extensions>php</extensions>
@@ -12,10 +12,8 @@
     <arg name="extensions" value="php"/>
     <arg value="p"/>
 
-    <exclude-pattern>Source/PunktDe.Vvw.Tests/Tests/Behaviour/_support</exclude-pattern>
     <exclude-pattern>*Tests/Unit/*</exclude-pattern>
     <exclude-pattern>*Tests/Functional/*</exclude-pattern>
-    <exclude-pattern>Source/PunktDe.Vvw.MyVvw</exclude-pattern>
 
     <!-- Don't hide tokenizer exceptions -->
     <rule ref="Internal.Tokenizer.Exception">
