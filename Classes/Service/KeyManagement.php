@@ -12,7 +12,7 @@ use Neos\Flow\Annotations as Flow;
 use Neos\Utility\Files;
 use PunktDe\OAuth2\Server\Domain\Model\ServerConfiguration;
 use PunktDe\OAuth2\Server\Domain\Repository\ServerConfigurationRepository;
-use PunktDe\OAuth2\Server\OAuthServerException;
+use PunktDe\OAuth2\Server\Exceptions\OAuthServerException;
 
 /**
  * @Flow\Scope("singleton")

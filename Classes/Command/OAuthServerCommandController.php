@@ -8,6 +8,7 @@ namespace PunktDe\OAuth2\Server\Command;
  *  All rights reserved.
  */
 
+use Neos\Flow\Annotations\Inject;
 use Neos\Flow\Mvc\Exception\StopActionException;
 use Neos\Flow\Persistence\Exception\IllegalObjectTypeException;
 use PunktDe\OAuth2\Server\Domain\Model\Client;
@@ -17,7 +18,6 @@ use PunktDe\OAuth2\Server\Domain\Repository\AccessTokenRepository;
 use PunktDe\OAuth2\Server\Domain\Repository\ClientRepository;
 use PunktDe\OAuth2\Server\Domain\Repository\ScopeRepository;
 use PunktDe\OAuth2\Server\Domain\Repository\ServerConfigurationRepository;
-use Neos\Flow\Annotations\Inject;
 use Neos\Flow\Cli\CommandController;
 use PunktDe\OAuth2\Server\Service\KeyManagement;
 
