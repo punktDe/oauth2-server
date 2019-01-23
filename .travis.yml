@@ -17,4 +17,4 @@ install:
   - mv oauth2-server neos-base-distribution/Packages/Application/PunktDe.OAuth2.Server
   - cd neos-base-distribution
 script:
-  - bin/phpunit --colors --stop-on-failure -c Build/BuildEssentials/PhpUnit/FunctionalTests.xml Packages/Application/PunktDe.Archivist/Tests/Functional
+  - bin/phpunit --colors --stop-on-failure -c Build/BuildEssentials/PhpUnit/FunctionalTests.xml Packages/Application/PunktDe.OAuth2.Server/Tests/Functional
