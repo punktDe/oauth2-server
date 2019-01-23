@@ -2,7 +2,6 @@
 <ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="PSR-2-ElEquipo" xsi:noNamespaceSchemaLocation="phpcs.xsd">
     <description>PSR2 Coding standard Punkt.de flavored.</description>
 
-    <file>Source</file>
     <extensions>php</extensions>
 
 
