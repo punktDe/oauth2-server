@@ -68,7 +68,7 @@ final class OAuthServerController extends ActionController
      */
     public function authorizationAction(): string
     {
-        $this->logger->info('Requested authorization for client ' . $this->getRequestingClientFromCurrentRequest(), LogEnvironment::fromMethodName(__METHOD__));
+        $this->logger->info(sprintf('Requested authorization for client %s with scopes "%s"', $this->getRequestingClientFromCurrentRequest(), $this->getRequestedScopesFromCurrentRequest()), LogEnvironment::fromMethodName(__METHOD__));
         $this->debugRequest();
 
         $response = $this->withErrorHandling(function () {
@@ -168,6 +168,14 @@ final class OAuthServerController extends ActionController
     private function getRequestingClientFromCurrentRequest(): string
     {
         return $this->request->getHttpRequest()->hasArgument('client_id') ? $this->request->getHttpRequest()->getArgument('client_id') : '';
+    }
+
+    /**
+     * @return string
+     */
+    private function getRequestedScopesFromCurrentRequest(): string
+    {
+        return $this->request->getHttpRequest()->hasArgument('scope') ? $this->request->getHttpRequest()->getArgument('scope') : '';
     }
 
     /**
