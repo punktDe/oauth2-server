@@ -134,9 +134,7 @@ class AuthorizationServerFactory
      */
     private function initializeClientCredentialsGrant(array $grantTypeConfiguration): void
     {
-        $accessTokenTTL = $grantTypeConfiguration['accessTokenTTL'] ?? 'PT1H'; // access tokens will expire after 1 hour
-
-        $this->authorizationServer->enableGrantType(new ClientCredentialsGrant(), new \DateInterval($accessTokenTTL));
+        $this->authorizationServer->enableGrantType(new ClientCredentialsGrant(), new \DateInterval($grantTypeConfiguration['accessTokenTTL']));
     }
 
     /**
@@ -145,18 +143,14 @@ class AuthorizationServerFactory
      */
     private function initializeAuthCodeGrant(array $grantTypeConfiguration): void
     {
-        $authCodeTTL = $grantTypeConfiguration['authCodeTTL'] ?? 'PT10M'; // authcode tokens will expire after 10 min
-        $refreshTokenTTL = $grantTypeConfiguration['refreshTokenTTL'] ?? 'P1M'; // refresh tokens will expire after 1 month
-        $accessTokenTTL = $grantTypeConfiguration['accessTokenTTL'] ?? 'PT1H'; // access tokens will expire after 1 hour
-
         $authCodeGrant = new AuthCodeGrant(
             $this->authCodeRepository,
             $this->refreshTokenRepository,
-            new \DateInterval($authCodeTTL)
+            new \DateInterval($grantTypeConfiguration['authCodeTTL'])
         );
 
-        $authCodeGrant->setRefreshTokenTTL(new \DateInterval($refreshTokenTTL));
-        $this->authorizationServer->enableGrantType($authCodeGrant, new \DateInterval($accessTokenTTL));
+        $authCodeGrant->setRefreshTokenTTL(new \DateInterval($grantTypeConfiguration['refreshTokenTTL']));
+        $this->authorizationServer->enableGrantType($authCodeGrant, new \DateInterval($grantTypeConfiguration['accessTokenTTL']));
 
         $this->logger->debug('AuthCodeGrant initialized', LogEnvironment::fromMethodName(__METHOD__));
     }
@@ -167,11 +161,9 @@ class AuthorizationServerFactory
      */
     private function initializeImplicitGrant(array $grantTypeConfiguration): void
     {
-        $accessTokenTTL = $grantTypeConfiguration['accessTokenTTL'] ?? 'PT1H'; // access tokens will expire after 1 hour
-
         $this->authorizationServer->enableGrantType(
-            new ImplicitGrant(new \DateInterval($accessTokenTTL)),
-            new \DateInterval($accessTokenTTL)
+            new ImplicitGrant(new \DateInterval($grantTypeConfiguration['accessTokenTTL'])),
+            new \DateInterval($grantTypeConfiguration['accessTokenTTL'])
         );
     }
 
@@ -181,14 +173,11 @@ class AuthorizationServerFactory
      */
     private function initializePasswordGrant(array $grantTypeConfiguration): void
     {
-        $refreshTokenTTL = $grantTypeConfiguration['refreshTokenTTL'] ?? 'P1M'; // refresh tokens will expire after 1 month
-        $accessTokenTTL = $grantTypeConfiguration['accessTokenTTL'] ?? 'PT1H'; // access tokens will expire after 1 hour
-
         $grant = new PasswordGrant($this->userRepository, $this->refreshTokenRepository);
 
-        $grant->setRefreshTokenTTL(new \DateInterval($refreshTokenTTL));
+        $grant->setRefreshTokenTTL(new \DateInterval($grantTypeConfiguration['refreshTokenTTL']));
 
-        $this->authorizationServer->enableGrantType($grant, new \DateInterval($accessTokenTTL));
+        $this->authorizationServer->enableGrantType($grant, new \DateInterval($grantTypeConfiguration['accessTokenTTL']));
     }
 
     /**
