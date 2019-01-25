@@ -4,12 +4,22 @@ PunktDe:
       grantTypes:
         client_credentials:
           enabled: false
+          accessTokenTTL: PT1H
+
         authorization_code:
           enabled: false
+          authCodeTTL: PT10M
+          refreshTokenTTL: P1M
+          accessTokenTTL: PT1H
+
         implicit:
           enabled: false
+          accessTokenTTL: PT1H
+
         password:
           enabled: false
+          refreshTokenTTL: P1M
+          accessTokenTTL: PT1H
 
       scopes: []
       authenticationPageUri: '?forwardUrl=/oauth/approveauthorization'

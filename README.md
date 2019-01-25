@@ -29,6 +29,8 @@ Enable the required grant types within your settings:
 	        authorization_code:
 	          enabled: false
 
+Have a look at `Settings.PunktDe.yaml` for further configuration values.  
+
 Generate server keys:
 
 	./flow oauthserver:generateserverkeys
