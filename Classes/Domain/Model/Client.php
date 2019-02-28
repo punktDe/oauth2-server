@@ -46,7 +46,7 @@ final class Client implements ClientEntityInterface
     protected $hashedSecret = null;
 
     /**
-     * @ORM\Column(nullable=true)
+     * @ORM\Column(nullable=true, type="text", length=2000)
      * @var string
      */
     protected $redirectUri = null;
