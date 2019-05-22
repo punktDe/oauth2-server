@@ -99,7 +99,7 @@ final class OAuthServerCommandController extends CommandController
             $this->quit(1);
         }
 
-        if ($secret === null) {
+        if ($secret === '') {
             $secret = base64_encode(random_bytes(30));
         }
 
