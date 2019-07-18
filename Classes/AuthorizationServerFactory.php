@@ -12,6 +12,7 @@ use League\OAuth2\Server\Grant\AuthCodeGrant;
 use League\OAuth2\Server\Grant\ClientCredentialsGrant;
 use League\OAuth2\Server\Grant\ImplicitGrant;
 use League\OAuth2\Server\Grant\PasswordGrant;
+use League\OAuth2\Server\Grant\RefreshTokenGrant;
 use Neos\Flow\Annotations as Flow;
 use League\OAuth2\Server\AuthorizationServer;
 use Neos\Flow\Log\PsrSystemLoggerInterface;
@@ -153,6 +154,8 @@ class AuthorizationServerFactory
         $this->authorizationServer->enableGrantType($authCodeGrant, new \DateInterval($grantTypeConfiguration['accessTokenTTL']));
 
         $this->logger->debug('AuthCodeGrant initialized', LogEnvironment::fromMethodName(__METHOD__));
+
+        $this->initializeRefreshTokenGrant($grantTypeConfiguration);
     }
 
     /**
@@ -178,6 +181,24 @@ class AuthorizationServerFactory
         $grant->setRefreshTokenTTL(new \DateInterval($grantTypeConfiguration['refreshTokenTTL']));
 
         $this->authorizationServer->enableGrantType($grant, new \DateInterval($grantTypeConfiguration['accessTokenTTL']));
+
+        $this->logger->debug('PasswordGrant initialized', LogEnvironment::fromMethodName(__METHOD__));
+
+        $this->initializeRefreshTokenGrant($grantTypeConfiguration);
+    }
+
+    /**
+     * @param array $grantTypeConfiguration
+     * @throws \Exception
+     */
+    private function initializeRefreshTokenGrant(array $grantTypeConfiguration): void
+    {
+        $grant = new RefreshTokenGrant($this->refreshTokenRepository);
+        $grant->setRefreshTokenTTL(new \DateInterval($grantTypeConfiguration['refreshTokenTTL']));
+
+        $this->authorizationServer->enableGrantType($grant, new \DateInterval($grantTypeConfiguration['accessTokenTTL']));
+
+        $this->logger->debug('RefreshTokenGrant initialized', LogEnvironment::fromMethodName(__METHOD__));
     }
 
     /**
