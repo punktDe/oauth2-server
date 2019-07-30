@@ -33,7 +33,7 @@ class KeyManagement
     {
         $publicKey = $this->serverConfigurationRepository->findOneByConfigurationKey('publicKey');
         if (!$publicKey instanceof ServerConfiguration) {
-            throw new OAuthServerException('Public key not found in OAuth server configuration.', 1509978035365);
+            throw new OAuthServerException('Public key not found in OAuth server configuration.', 1563515138);
         }
 
         return $publicKey->getConfigurationValue();
@@ -47,7 +47,7 @@ class KeyManagement
     {
         $privateKey = $this->serverConfigurationRepository->findOneByConfigurationKey('privateKey');
         if (!$privateKey instanceof ServerConfiguration) {
-            throw new OAuthServerException('Private key not found in OAuth server configuration.', 1509978035365);
+            throw new OAuthServerException('Private key not found in OAuth server configuration.', 1563515139);
         }
 
         return $privateKey->getConfigurationValue();
@@ -61,7 +61,7 @@ class KeyManagement
     {
         $encryptionKey = $this->serverConfigurationRepository->findOneByConfigurationKey('encryptionKey');
         if (!$encryptionKey instanceof ServerConfiguration) {
-            throw new OAuthServerException('Encryption key not found in OAuth server configuration.', 1509978084514);
+            throw new OAuthServerException('Encryption key not found in OAuth server configuration.', 1563515140);
         }
         return $encryptionKey->getConfigurationValue();
     }
