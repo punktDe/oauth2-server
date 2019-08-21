@@ -9,10 +9,10 @@ namespace PunktDe\OAuth2\Server\Domain\Repository;
  */
 
 use Neos\Flow\Annotations as Flow;
-use Neos\Flow\Log\PsrSystemLoggerInterface;
 use Neos\Flow\Persistence\Repository;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Repositories\ClientRepositoryInterface;
+use Psr\Log\LoggerInterface;
 use PunktDe\OAuth2\Server\Domain\Model\Client;
 use PunktDe\OAuth2\Server\Utility\LogEnvironment;
 
@@ -23,7 +23,7 @@ class ClientRepository extends Repository implements ClientRepositoryInterface
 {
     /**
      * @Flow\Inject
-     * @var PsrSystemLoggerInterface
+     * @var LoggerInterface
      */
     protected $logger;
 

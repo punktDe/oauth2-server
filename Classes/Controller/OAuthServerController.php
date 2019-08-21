@@ -10,6 +10,7 @@ namespace PunktDe\OAuth2\Server\Controller;
 
 use Neos\Flow\Annotations as Flow;
 use League\OAuth2\Server\RequestTypes\AuthorizationRequest;
+use Neos\Flow\Log\Utility\LogEnvironment;
 use Psr\Http\Message\ResponseInterface;
 use PunktDe\OAuth2\Server\Authorization\AuthorizationApprovalService;
 use PunktDe\OAuth2\Server\AuthorizationServerFactory;
@@ -19,7 +20,6 @@ use League\OAuth2\Server\Exception\OAuthServerException;
 use Neos\Flow\Mvc\Controller\ActionController;
 use PunktDe\OAuth2\Server\Service\PsrRequestResponseService;
 use PunktDe\OAuth2\Server\Session\AuthorizationSession;
-use PunktDe\OAuth2\Server\Utility\LogEnvironment;
 
 final class OAuthServerController extends ActionController
 {

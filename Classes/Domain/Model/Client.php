@@ -13,8 +13,8 @@ use Neos\Flow\Annotations\Identity;
 use Neos\Flow\Annotations\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Neos\Flow\Annotations\Inject;
-use Neos\Flow\Log\SystemLoggerInterface;
 use Neos\Utility\Arrays;
+use Psr\Log\LoggerInterface;
 
 /**
  * @Entity
@@ -53,7 +53,7 @@ final class Client implements ClientEntityInterface
 
     /**
      * @Inject()
-     * @var SystemLoggerInterface
+     * @var LoggerInterface
      */
     protected $logger;
 

@@ -10,13 +10,13 @@ namespace PunktDe\OAuth2\Server\Authorization;
 
 use Neos\Flow\Annotations as Flow;
 use League\OAuth2\Server\RequestTypes\AuthorizationRequest;
-use Neos\Flow\Log\PsrSystemLoggerInterface;
+use Neos\Flow\Log\Utility\LogEnvironment;
 use Neos\Flow\Reflection\ReflectionService;
 use Neos\Flow\Security\Account;
 use Neos\Flow\Security\Context;
+use Psr\Log\LoggerInterface;
 use PunktDe\OAuth2\Server\Authorization\ApprovalStrategies\ApprovalStrategyInterface;
 use PunktDe\OAuth2\Server\Domain\Model\UserEntity;
-use PunktDe\OAuth2\Server\Utility\LogEnvironment;
 
 class AuthorizationApprovalService
 {
@@ -34,7 +34,7 @@ class AuthorizationApprovalService
 
     /**
      * @Flow\Inject
-     * @var PsrSystemLoggerInterface
+     * @var LoggerInterface
      */
     protected $logger;
 

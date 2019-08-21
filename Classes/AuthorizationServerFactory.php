@@ -15,7 +15,8 @@ use League\OAuth2\Server\Grant\PasswordGrant;
 use League\OAuth2\Server\Grant\RefreshTokenGrant;
 use Neos\Flow\Annotations as Flow;
 use League\OAuth2\Server\AuthorizationServer;
-use Neos\Flow\Log\PsrSystemLoggerInterface;
+use Neos\Flow\Log\Utility\LogEnvironment;
+use Psr\Log\LoggerInterface;
 use PunktDe\OAuth2\Server\Domain\Repository\AccessTokenRepository;
 use PunktDe\OAuth2\Server\Domain\Repository\AuthCodeRepository;
 use PunktDe\OAuth2\Server\Domain\Repository\ClientRepository;
@@ -23,9 +24,8 @@ use PunktDe\OAuth2\Server\Domain\Repository\RefreshTokenRepository;
 use PunktDe\OAuth2\Server\Domain\Repository\ScopeRepository;
 use PunktDe\OAuth2\Server\Domain\Repository\UserRepository;
 use PunktDe\OAuth2\Server\Service\KeyManagement;
-use PunktDe\OAuth2\Server\Utility\LogEnvironment;
-
 class AuthorizationServerFactory
+
 {
 
     const GRANT_TYPE_CLIENT_CREDENTIALS = 'client_credentials';
@@ -77,7 +77,7 @@ class AuthorizationServerFactory
 
     /**
      * @Flow\Inject(lazy=false)
-     * @var PsrSystemLoggerInterface
+     * @var LoggerInterface
      */
     protected $logger;
 
