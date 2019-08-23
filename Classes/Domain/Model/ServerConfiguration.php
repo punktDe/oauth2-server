@@ -3,6 +3,11 @@ declare(strict_types=1);
 
 namespace PunktDe\OAuth2\Server\Domain\Model;
 
+/*
+ *  (c) 2018 punkt.de GmbH - Karlsruhe, Germany - http://punkt.de
+ *  All rights reserved.
+ */
+
 use Doctrine\ORM\Mapping as ORM;
 use Neos\Flow\Annotations\Entity;
 use Neos\Flow\Annotations\Identity;
@@ -10,7 +15,7 @@ use Neos\Flow\Annotations\Identity;
 /**
  * @Entity()
  */
-final class ServerConfiguration implements \JsonSerializable
+class ServerConfiguration implements \JsonSerializable
 {
     /**
      * @Identity()
