@@ -11,43 +11,23 @@ namespace PunktDe\OAuth2\Server\Service;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\ServerRequest;
 use GuzzleHttp\Psr7\Stream;
+use Neos\Flow\Http\Component\ReplaceHttpResponseComponent;
 use Neos\Flow\Http\Request;
+use Neos\Flow\Mvc\ActionResponse;
 use Psr\Http\Message\ServerRequestInterface;
 
 class PsrRequestResponseService
 {
     /**
-     * @param Request $flowRequest
-     * @return ServerRequestInterface
-     */
-    public static function transferFlowRequestToPsr7Request(Request $flowRequest): ServerRequestInterface
-    {
-        return (new ServerRequest(
-            $flowRequest->getMethod(),
-            $flowRequest->getUri(),
-            $flowRequest->getHeaders()->getAll(),
-            $flowRequest->getVersion()
-        ))->withAttribute('access_token', $flowRequest->getArgument('access_token'));
-    }
-
-    /**
      * Transfer the truly PSR-7 compatible response to the Flow HTTP response
      *
      * @param Response $psr7Response
-     * @param \Neos\Flow\Http\Response $flowResponse
+     * @param ActionResponse $actionResponse
      * @return string
      */
-    public static function transferPsr7ResponseToFlowResponse(Response $psr7Response, \Neos\Flow\Http\Response $flowResponse): string
+    public static function replaceResponse(Response $psr7Response, ActionResponse $actionResponse): string
     {
-        $flowResponse->setStatus($psr7Response->getStatusCode());
-        foreach ($psr7Response->getHeaders() as $headerName => $headerValues) {
-            foreach ($headerValues as $headerValue) {
-                $flowResponse->setHeader($headerName, $headerValue);
-            }
-        }
-
-        $psr7Response->getBody()->rewind();
-
+        $actionResponse->setComponentParameter(ReplaceHttpResponseComponent::class, ReplaceHttpResponseComponent::PARAMETER_RESPONSE, $psr7Response);
         return $psr7Response->getBody()->getContents();
     }
 

@@ -23,7 +23,7 @@ class AuthorizationServerFactoryTest extends FunctionalTestCase
 
     protected static $testablePersistenceEnabled = true;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         $this->authorizationServerFactory = $this->objectManager->get(AuthorizationServerFactory::class);
@@ -34,6 +34,7 @@ class AuthorizationServerFactoryTest extends FunctionalTestCase
 
     /**
      * @test
+     * @throws \Exception
      */
     public function getInstance()
     {

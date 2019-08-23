@@ -8,9 +8,11 @@ namespace PunktDe\OAuth2\Server\Controller;
  *  All rights reserved.
  */
 
+use Exception;
 use Neos\Flow\Annotations as Flow;
 use League\OAuth2\Server\RequestTypes\AuthorizationRequest;
 use Neos\Flow\Log\Utility\LogEnvironment;
+use Neos\Flow\Mvc\Exception\NoSuchArgumentException;
 use Psr\Http\Message\ResponseInterface;
 use PunktDe\OAuth2\Server\Authorization\AuthorizationApprovalService;
 use PunktDe\OAuth2\Server\AuthorizationServerFactory;
@@ -54,7 +56,7 @@ final class OAuthServerController extends ActionController
 
     /**
      * @return void
-     * @throws \Exception
+     * @throws Exception
      */
     public function initializeAction(): void
     {
@@ -83,7 +85,7 @@ final class OAuthServerController extends ActionController
             }
         });
 
-        return PsrRequestResponseService::transferPsr7ResponseToFlowResponse($response, $this->response);
+        return PsrRequestResponseService::replaceResponse($response, $this->response);
     }
 
     /**
@@ -107,17 +109,18 @@ final class OAuthServerController extends ActionController
             if ($authorizationRequest->isAuthorizationApproved()) {
                 return $response;
             } else {
-                throw new OAuthServerException('Requesteded to authorize a session stored request, but user was not authenticated', 1548142529, 'user_not_authenticated');
+                throw new OAuthServerException('Requested to authorize a session stored request, but user was not authenticated', 1548142529, 'user_not_authenticated');
             }
         });
 
-        return PsrRequestResponseService::transferPsr7ResponseToFlowResponse($response, $this->response);
+        return PsrRequestResponseService::replaceResponse($response, $this->response);
     }
 
     /**
      * uriPattern: 'oauth/token'
      *
      * @return string
+     * @throws NoSuchArgumentException
      */
     public function accessTokenAction(): string
     {
@@ -128,7 +131,7 @@ final class OAuthServerController extends ActionController
             return $this->authorizationServer->respondToAccessTokenRequest($this->request->getHttpRequest(), new Response());
         });
 
-        return PsrRequestResponseService::transferPsr7ResponseToFlowResponse($response, $this->response);
+        return PsrRequestResponseService::replaceResponse($response, $this->response);
     }
 
     /**
@@ -143,7 +146,7 @@ final class OAuthServerController extends ActionController
             // All instances of OAuthServerException can be formatted into a HTTP response
             $this->logger->error(sprintf('OAuthServerException: %s', $exception->getMessage()), LogEnvironment::fromMethodName(__METHOD__));
             return $exception->generateHttpResponse(new Response());
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             $this->logger->error(sprintf('Unknown exception: %s', $exception->getMessage()), LogEnvironment::fromMethodName(__METHOD__));
             return PsrRequestResponseService::psr7ErrorResponseFromMessage(new Response(), $exception->getMessage());
         }
@@ -154,7 +157,7 @@ final class OAuthServerController extends ActionController
      */
     private function debugRequest(): void
     {
-        $requestArguments = $this->request->getHttpRequest()->getArguments();
+        $requestArguments = $this->request->getArguments();
         if (isset($requestArguments['client_secret'])) {
             $requestArguments['client_secret'] = str_repeat('*', strlen($requestArguments['client_secret']));
         }
@@ -164,18 +167,20 @@ final class OAuthServerController extends ActionController
 
     /**
      * @return string
+     * @throws NoSuchArgumentException
      */
     private function getRequestingClientFromCurrentRequest(): string
     {
-        return $this->request->getHttpRequest()->hasArgument('client_id') ? $this->request->getHttpRequest()->getArgument('client_id') : '';
+        return $this->request->hasArgument('client_id') ? $this->request->getArgument('client_id') : '';
     }
 
     /**
      * @return string
+     * @throws NoSuchArgumentException
      */
     private function getRequestedScopesFromCurrentRequest(): string
     {
-        return $this->request->getHttpRequest()->hasArgument('scope') ? $this->request->getHttpRequest()->getArgument('scope') : '';
+        return $this->request->hasArgument('scope') ? $this->request->getArgument('scope') : '';
     }
 
     /**
