@@ -19,7 +19,7 @@ use Psr\Log\LoggerInterface;
 /**
  * @Entity
  */
-final class Client implements ClientEntityInterface
+class Client implements ClientEntityInterface
 {
     /**
      * @Identity
