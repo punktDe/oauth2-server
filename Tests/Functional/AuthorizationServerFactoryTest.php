@@ -36,9 +36,8 @@ class AuthorizationServerFactoryTest extends FunctionalTestCase
      * @test
      * @throws \Exception
      */
-    public function getInstance()
+    public function getInstance(): void
     {
         $authorizationServer = $this->authorizationServerFactory->getInstance();
-        $this->assertInstanceOf(AuthorizationServer::class, $authorizationServer);
     }
 }
