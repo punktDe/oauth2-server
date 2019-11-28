@@ -9,7 +9,7 @@ before_install:
   - cd ..
   - git clone https://github.com/neos/flow-base-distribution.git -b ${FLOW_TARGET_VERSION}
   - cd flow-base-distribution
-  - composer require --no-update --no-interaction punktde/oauth2-server:dev-master
+  - composer require --no-update --no-interaction punktde/oauth2-server:0.1.x-dev
   - composer require --dev --no-update --no-interaction consistence/coding-standard
 install:
   - composer install --no-interaction
