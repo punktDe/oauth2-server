@@ -188,7 +188,7 @@ class AuthorizationServerFactory
     }
 
     /**
-     * @param array $grantTypeConfiguration
+     * @param string[] $grantTypeConfiguration
      * @throws \Exception
      */
     private function initializeRefreshTokenGrant(array $grantTypeConfiguration): void
