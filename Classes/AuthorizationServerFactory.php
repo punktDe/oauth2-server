@@ -27,7 +27,6 @@ use PunktDe\OAuth2\Server\Service\KeyManagement;
 
 class AuthorizationServerFactory
 {
-
     const GRANT_TYPE_CLIENT_CREDENTIALS = 'client_credentials';
     const GRANT_TYPE_AUTH_CODE = 'authorization_code';
     const GRANT_TYPE_IMPLICIT = 'implicit';
@@ -207,6 +206,6 @@ class AuthorizationServerFactory
      */
     private function isGrantTypeEnabled(string $grantType): bool
     {
-        return isset($this->grantTypeConfiguration[$grantType]['enabled']) ? $this->grantTypeConfiguration[$grantType]['enabled'] : false;
+        return $this->grantTypeConfiguration[$grantType]['enabled'] ?? false;
     }
 }
