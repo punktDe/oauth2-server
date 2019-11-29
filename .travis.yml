@@ -15,7 +15,7 @@ install:
   - composer install --no-interaction
   - cd ..
   - rm -rf flow-base-distribution/Packages/Application/PunktDe.OAuth2.Server
-  - cp oauth2-server/.phpcs.xml neos-base-distribution/.phpcs.xml
+  - cp oauth2-server/.phpcs.xml flow-base-distribution/.phpcs.xml
   - mv oauth2-server flow-base-distribution/Packages/Application/PunktDe.OAuth2.Server
   - cd flow-base-distribution
 script:

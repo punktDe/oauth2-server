@@ -48,7 +48,7 @@
 
     <!-- Coding Standard Package -->
     <config name="installed_paths" value="../../slevomat/coding-standard"/>
-    <rule ref="SlevomatCodingStandard.ControlStructures.DisallowEqualOperators"></rule>
+    <rule ref="SlevomatCodingStandard.Operators.DisallowEqualOperators"></rule>
     <rule ref="SlevomatCodingStandard.Functions.UnusedParameter"></rule>
     <rule ref="SlevomatCodingStandard.Namespaces.UnusedUses">
         <properties>

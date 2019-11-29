@@ -24,8 +24,8 @@ use PunktDe\OAuth2\Server\Domain\Repository\RefreshTokenRepository;
 use PunktDe\OAuth2\Server\Domain\Repository\ScopeRepository;
 use PunktDe\OAuth2\Server\Domain\Repository\UserRepository;
 use PunktDe\OAuth2\Server\Service\KeyManagement;
-class AuthorizationServerFactory
 
+class AuthorizationServerFactory
 {
 
     const GRANT_TYPE_CLIENT_CREDENTIALS = 'client_credentials';
@@ -188,7 +188,7 @@ class AuthorizationServerFactory
     }
 
     /**
-     * @param array $grantTypeConfiguration
+     * @param string[] $grantTypeConfiguration
      * @throws \Exception
      */
     private function initializeRefreshTokenGrant(array $grantTypeConfiguration): void
