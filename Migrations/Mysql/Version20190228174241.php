@@ -4,6 +4,8 @@ namespace Neos\Flow\Persistence\Doctrine\Migrations;
 use Doctrine\DBAL\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
 
+// phpcs:ignoreFile
+
 class Version20190228174241 extends AbstractMigration
 {
 
