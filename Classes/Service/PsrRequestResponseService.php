@@ -9,12 +9,9 @@ namespace PunktDe\OAuth2\Server\Service;
  */
 
 use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Psr7\ServerRequest;
 use GuzzleHttp\Psr7\Stream;
 use Neos\Flow\Http\Component\ReplaceHttpResponseComponent;
-use Neos\Flow\Http\Request;
 use Neos\Flow\Mvc\ActionResponse;
-use Psr\Http\Message\ServerRequestInterface;
 
 class PsrRequestResponseService
 {
