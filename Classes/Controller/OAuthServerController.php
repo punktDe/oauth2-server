@@ -67,6 +67,7 @@ final class OAuthServerController extends ActionController
      * uriPattern: 'oauth/authorize'
      *
      * @return string
+     * @throws NoSuchArgumentException
      */
     public function authorizationAction(): string
     {
@@ -186,7 +187,7 @@ final class OAuthServerController extends ActionController
     /**
      * @param AuthorizationRequest $authorizationRequest
      * @param Response $response
-     * @return Response
+     * @return ResponseInterface
      */
     private function approveAuthorizationRequest(AuthorizationRequest $authorizationRequest, Response $response): ResponseInterface
     {
