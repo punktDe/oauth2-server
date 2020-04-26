@@ -56,7 +56,8 @@ If the client is a web application that has a server side component then you sho
 The urls to use are: 
 
 * Access Token URL: `<YourDomain>/oauth/token`
-* Authorization URL `<YourDomain>/oauth/authorize`
+* Authorization URL: `<YourDomain>/oauth/authorize`
+* Authorization approval URL: `oauth/approveauthorization`
 
 The Authorization code grant is currently implemented with an implicit authorization of the requesting application.
 
