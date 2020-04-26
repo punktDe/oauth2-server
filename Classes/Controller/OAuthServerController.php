@@ -11,8 +11,10 @@ namespace PunktDe\OAuth2\Server\Controller;
 use Exception;
 use Neos\Flow\Annotations as Flow;
 use League\OAuth2\Server\RequestTypes\AuthorizationRequest;
+use Neos\Flow\Log\ThrowableStorageInterface;
 use Neos\Flow\Log\Utility\LogEnvironment;
 use Neos\Flow\Mvc\Exception\NoSuchArgumentException;
+use Neos\Flow\Mvc\Exception\StopActionException;
 use Psr\Http\Message\ResponseInterface;
 use PunktDe\OAuth2\Server\Authorization\AuthorizationApprovalService;
 use PunktDe\OAuth2\Server\AuthorizationServerFactory;
@@ -55,6 +57,12 @@ final class OAuthServerController extends ActionController
     protected $authenticationPageUri;
 
     /**
+     * @Flow\Inject
+     * @var ThrowableStorageInterface
+     */
+    protected $throwableStorage;
+
+    /**
      * @return void
      * @throws Exception
      */
@@ -68,6 +76,7 @@ final class OAuthServerController extends ActionController
      *
      * @return string
      * @throws NoSuchArgumentException
+     * @throws StopActionException
      */
     public function authorizationAction(): string
     {
@@ -82,6 +91,7 @@ final class OAuthServerController extends ActionController
                 return $response;
             } else {
                 $this->authorizationSession->setAuthorizationRequest($authorizationRequest);
+                $this->logger->debug('User is not authorized, redirecting to ' . $this->authenticationPageUri, LogEnvironment::fromMethodName(__METHOD__));
                 $this->redirectToUri($this->authenticationPageUri);
             }
         });
@@ -95,6 +105,7 @@ final class OAuthServerController extends ActionController
      * uriPattern: 'oauth/approveauthorization'
      *
      * @return string
+     * @throws StopActionException
      */
     public function approveAuthorizationAction(): string
     {
@@ -122,6 +133,7 @@ final class OAuthServerController extends ActionController
      *
      * @return string
      * @throws NoSuchArgumentException
+     * @throws StopActionException
      */
     public function accessTokenAction(): string
     {
@@ -138,6 +150,7 @@ final class OAuthServerController extends ActionController
     /**
      * @param callable $callback
      * @return Response
+     * @throws StopActionException
      */
     private function withErrorHandling(callable $callback): Response
     {
@@ -147,8 +160,12 @@ final class OAuthServerController extends ActionController
             // All instances of OAuthServerException can be formatted into a HTTP response
             $this->logger->error(sprintf('OAuthServerException: %s', $exception->getMessage()), LogEnvironment::fromMethodName(__METHOD__));
             return $exception->generateHttpResponse(new Response());
+        } catch (StopActionException $exception) {
+            // In case of a redirect to the login page, a StopActionException needs to be thrown.
+            throw $exception;
         } catch (Exception $exception) {
-            $this->logger->error(sprintf('Unknown exception: %s', $exception->getMessage()), LogEnvironment::fromMethodName(__METHOD__));
+            $message = $this->throwableStorage->logThrowable($exception);
+            $this->logger->error($message, LogEnvironment::fromMethodName(__METHOD__));
             return PsrRequestResponseService::psr7ErrorResponseFromMessage(new Response(), $exception->getMessage());
         }
     }
@@ -163,7 +180,7 @@ final class OAuthServerController extends ActionController
             $requestArguments['client_secret'] = str_repeat('*', strlen($requestArguments['client_secret']));
         }
 
-        $this->logger->debug('Request arguments for ' . $this->request->getHttpRequest()->getRelativePath(), $requestArguments + LogEnvironment::fromMethodName(__METHOD__));
+        $this->logger->debug('Request arguments for ' . $this->request->getHttpRequest()->getUri(), $requestArguments + LogEnvironment::fromMethodName(__METHOD__));
     }
 
     /**
