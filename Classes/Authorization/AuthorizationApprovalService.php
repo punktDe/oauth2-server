@@ -45,6 +45,7 @@ class AuthorizationApprovalService
     public function approveAuthorizationRequest(AuthorizationRequest $authorizationRequest): void
     {
         if (!$this->securityContext->isInitialized() || !$this->securityContext->getAccount() instanceof Account) {
+            $this->logger->info('User has no active logged-in account', LogEnvironment::fromMethodName(__METHOD__));
             return;
         }
 
@@ -61,5 +62,6 @@ class AuthorizationApprovalService
 
         $authorizationRequest->setUser(new UserEntity($account));
         $authorizationRequest->setAuthorizationApproved(true);
+        $this->logger->info(sprintf('Authorization for the account with identifier "%s" successfully approved.', $account->getAccountIdentifier()), LogEnvironment::fromMethodName(__METHOD__));
     }
 }

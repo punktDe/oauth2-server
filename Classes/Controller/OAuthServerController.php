@@ -88,6 +88,7 @@ final class OAuthServerController extends ActionController
 
             $response = $this->approveAuthorizationRequest($authorizationRequest, new Response());
             if ($authorizationRequest->isAuthorizationApproved()) {
+                $this->logger->info(sprintf('Authorization for client %s successfully approved', $this->getRequestingClientFromCurrentRequest()), LogEnvironment::fromMethodName(__METHOD__));
                 return $response;
             } else {
                 $this->authorizationSession->setAuthorizationRequest($authorizationRequest);
@@ -137,7 +138,7 @@ final class OAuthServerController extends ActionController
      */
     public function accessTokenAction(): string
     {
-        $this->logger->info('OAuth access token requested for client ' . $this->getRequestingClientFromCurrentRequest(), LogEnvironment::fromMethodName(__METHOD__));
+        $this->logger->info(sprintf('OAuth access token requested for client "%s"', $this->getRequestingClientFromCurrentRequest()), LogEnvironment::fromMethodName(__METHOD__));
         $this->debugRequest();
 
         $response = $this->withErrorHandling(function () {
