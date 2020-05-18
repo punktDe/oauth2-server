@@ -145,7 +145,20 @@ final class OAuthServerController extends ActionController
             return $this->authorizationServer->respondToAccessTokenRequest($this->request->getHttpRequest(), new Response());
         });
 
-        return PsrRequestResponseService::replaceResponse($response, $this->response);
+        $this->response->setContentType('application/json; charset=UTF-8');
+
+        $response->getBody()->rewind();
+        $bodyContent = $response->getBody()->getContents();
+
+        if ($response->getStatusCode() === 200) {
+            $this->logger->info(sprintf('OAuth token successfully generated for client "%s"', $this->getRequestingClientFromCurrentRequest()), LogEnvironment::fromMethodName(__METHOD__));
+            $data = json_decode($bodyContent, true);
+            if (is_array($data)) {
+                $this->logger->debug('OAuth token data', $data + LogEnvironment::fromMethodName(__METHOD__));
+            }
+        }
+
+        return $bodyContent;
     }
 
     /**
