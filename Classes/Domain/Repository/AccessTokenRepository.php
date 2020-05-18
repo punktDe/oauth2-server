@@ -33,7 +33,7 @@ class AccessTokenRepository extends Repository implements AccessTokenRepositoryI
         $accessToken = new AccessToken();
         $accessToken->setClient($clientEntity);
         $accessToken->setUserIdentifier($userIdentifier);
-        $accessToken->setExpiryDateTime((new \DateTime())->add(new \DateInterval('PT6H')));
+        $accessToken->setExpiryDateTime(\DateTimeImmutable::createFromMutable((new \DateTime())->add(new \DateInterval('PT6H'))));
 
         foreach ($scopes as $scope) {
             $accessToken->addScope($scope);
