@@ -156,6 +156,8 @@ final class OAuthServerController extends ActionController
             if (is_array($data)) {
                 $this->logger->debug('OAuth token data', $data + LogEnvironment::fromMethodName(__METHOD__));
             }
+        } else {
+            $this->response->setStatusCode($response->getStatusCode());
         }
 
         return $bodyContent;
