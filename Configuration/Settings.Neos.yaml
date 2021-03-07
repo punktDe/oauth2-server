@@ -2,6 +2,4 @@ Neos:
   Flow:
     mvc:
       routes:
-        PunktDe.OAuth2.Server:
-          position: 'before Neos.Neos'
-
+        PunktDe.OAuth2.Server: true
