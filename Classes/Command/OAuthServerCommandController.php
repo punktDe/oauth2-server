@@ -72,7 +72,7 @@ final class OAuthServerCommandController extends CommandController
                 $this->serverConfigurationRepository->add(new ServerConfiguration($keyName, $keyValue));
                 $this->outputLine(sprintf('<success>Generated a new %s and stored it in the database.</success>', $keyName));
             } else {
-                $serverConfiguration->setConfigurationValue($keyName);
+                $serverConfiguration->setConfigurationValue($keyValue);
                 $this->serverConfigurationRepository->update($serverConfiguration);
                 $this->outputLine(sprintf('<success>Updated %s and stored it in the database.</success>', $keyName));
             }
