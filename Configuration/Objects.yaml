@@ -1,4 +1,3 @@
 League\OAuth2\Server\Repositories\UserRepositoryInterface:
   scope: singleton
-  className: PunktDe\OAuth2\Server\Domain\Repository\UserRepository 
-
+  className: PunktDe\OAuth2\Server\Domain\Repository\UserRepository
