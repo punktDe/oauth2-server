@@ -13,7 +13,6 @@ use League\OAuth2\Server\Grant\ClientCredentialsGrant;
 use League\OAuth2\Server\Grant\ImplicitGrant;
 use League\OAuth2\Server\Grant\PasswordGrant;
 use League\OAuth2\Server\Grant\RefreshTokenGrant;
-use League\OAuth2\Server\Repositories\UserRepositoryInterface;
 use Neos\Flow\Annotations as Flow;
 use League\OAuth2\Server\AuthorizationServer;
 use Neos\Flow\Log\Utility\LogEnvironment;
@@ -23,6 +22,7 @@ use PunktDe\OAuth2\Server\Domain\Repository\AuthCodeRepository;
 use PunktDe\OAuth2\Server\Domain\Repository\ClientRepository;
 use PunktDe\OAuth2\Server\Domain\Repository\RefreshTokenRepository;
 use PunktDe\OAuth2\Server\Domain\Repository\ScopeRepository;
+use PunktDe\OAuth2\Server\Domain\Repository\UserRepository;
 use PunktDe\OAuth2\Server\Service\KeyManagement;
 
 class AuthorizationServerFactory
@@ -70,7 +70,7 @@ class AuthorizationServerFactory
 
     /**
      * @Flow\Inject(lazy=false)
-     * @var UserRepositoryInterface
+     * @var UserRepository
      */
     protected $userRepository;
 
