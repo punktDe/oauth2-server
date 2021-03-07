@@ -4,7 +4,7 @@
   "license": "MIT",
   "type": "neos-package",
   "require": {
-    "neos/flow": "^6.0 || ^7.0",
+    "neos/flow": "^7.0",
     "league/oauth2-server": "^8.0",
     "guzzlehttp/psr7": "^1.6"
   },
