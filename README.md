@@ -16,6 +16,10 @@ Run the doctrine migrations
 	
 	./flow doctrine:migrate
 
+Optional: Define position of routes
+
+	Routes are per default included without any position parameter. If routes are positioned wrong adjust the position accordig to the [Flow Route documentation](https://flowframework.readthedocs.io/en/stable/TheDefinitiveGuide/PartIII/Routing.html#subroutes-from-settings)
+
 ## Configuration
 
 Enable the required grant types within your settings:
