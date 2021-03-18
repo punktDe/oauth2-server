@@ -2,4 +2,5 @@ Neos:
   Flow:
     mvc:
       routes:
-        PunktDe.OAuth2.Server: true
+        PunktDe.OAuth2.Server:
+          position: start
