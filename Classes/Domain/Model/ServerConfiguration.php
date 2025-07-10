@@ -75,10 +75,10 @@ class ServerConfiguration implements \JsonSerializable
     }
 
     /**
-     * @return string
+     * @return mixed
      * phpcs:disable
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         return $this->__toString();
     }
