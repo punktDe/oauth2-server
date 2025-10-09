@@ -6,7 +6,7 @@
   "require": {
     "neos/flow": "^7.0 || ^8.0",
     "league/oauth2-server": "^8.0",
-    "guzzlehttp/psr7": "^1.6"
+    "guzzlehttp/psr7": "^1.6 || ^2.0"
   },
   "autoload": {
     "psr-4": {
