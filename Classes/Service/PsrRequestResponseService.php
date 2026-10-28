@@ -10,7 +10,6 @@ namespace PunktDe\OAuth2\Server\Service;
 
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Psr7\Stream;
-use Neos\Flow\Http\Component\ReplaceHttpResponseComponent;
 use Neos\Flow\Mvc\ActionResponse;
 
 class PsrRequestResponseService
@@ -24,8 +23,18 @@ class PsrRequestResponseService
      */
     public static function replaceResponse(Response $psr7Response, ActionResponse $actionResponse): string
     {
-        $actionResponse->setComponentParameter(ReplaceHttpResponseComponent::class, ReplaceHttpResponseComponent::PARAMETER_RESPONSE, $psr7Response);
-        return $psr7Response->getBody()->getContents();
+        $body = $psr7Response->getBody();
+        if ($body->isSeekable()) {
+            $body->rewind();
+        }
+        $contents = $body->getContents();
+        if ($body->isSeekable()) {
+            $body->rewind();
+        }
+
+        $actionResponse->replaceHttpResponse($psr7Response);
+
+        return $contents;
     }
 
     /**
