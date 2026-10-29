@@ -4,9 +4,9 @@
   "license": "MIT",
   "type": "neos-package",
   "require": {
-    "neos/flow": "^7.0 || ^8.0",
+    "neos/flow": "^8.0 || ^9.0",
     "league/oauth2-server": "^8.0",
-    "guzzlehttp/psr7": "^1.6"
+    "guzzlehttp/psr7": "^1.6 || ^2.0"
   },
   "autoload": {
     "psr-4": {
@@ -14,6 +14,9 @@
     }
   },
   "extra": {
+    "neos": {
+      "package-key": "PunktDe.OAuth2.Server"
+    },
     "applied-flow-migrations": [
     ]
   }
